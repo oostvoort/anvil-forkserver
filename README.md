@@ -1,92 +1,84 @@
-# Anvil Forkserver
+<!-- ABOUT THE PROJECT -->
+# About The Project
+Forking and running a local simulated Ethereum environment is essential if you want to work with DeFi or do general Ethereum development.
 
+You can use the Forkserver during the development cycle; This allows you to develop, deploy and test your dApps in a secure and deterministic environment.
+Smart contracts, once implemented on the blockchain, are immutable, so it is important to test and debug smart contracts before deploying them on the blockchain.
 
+Therefore, it is important to have a local blockchain environment that can free developers from transaction fees and delays.
+The Forkserver was developed specifically for this.
+It is a local in-memory blockchain for development and testing, simulating a real Ethereum network, with multiple accounts funded with test Ether.
 
-## Getting started
+<!-- Features -->
+# Features
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- Funding - Fund accounts with ETH or any ERC20 token
+- Fast forwarding - Mine hundreds of blocks or change the block timestamp
+- State management - Save the current state of the blockchain as a hex string which can be loaded into a fresh/restarted instance of the Forkserver to reattain the same state.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+<!-- Getting Started -->
+# Getting Started
+It's recommended to use docker for running locally by using the provided docker-compose.yml in this repository.
 
-## Add your files
+## Using Docker
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### Prerequisites
+- [docker-engine](https://docs.docker.com/engine/install/)
+- A JSON RPC Endpoint with archive capabilities like [Infura](https://www.infura.io/), [QuickNode](https://www.quicknode.com/) or [Alchemy](https://www.alchemy.com/)
 
-```
-cd existing_repo
-git remote add origin https://code.oostvoort.com/tools/anvil-forkserver.git
-git branch -M main
-git push -uf origin main
-```
+### Installation
+1. Make a copy of the dev template docker-compose.dev.yml as docker-compose.yml
+2. Configure the environment variables as needed
+3. Run `docker compose up -d`
 
-## Integrate with your tools
+With the default settings: the server should be running at port 3000, the forked RPC endpoint at port 8545 and the dashboard at port 8080
 
-- [ ] [Set up project integrations](http://code.oostvoort.com/tools/anvil-forkserver/-/settings/integrations)
+## Developing
+If you wish to customize or extend the functionality of the Forkserver to suit your needs.
 
-## Collaborate with your team
+### Prerequisites
+- Install [Rust](https://www.rust-lang.org/tools/install)
+- Install [Foundry](https://book.getfoundry.sh/getting-started/installation)
+- Install [Protocol Buffer Compiler](https://grpc.io/docs/protoc-installation)
+- Install [Protocol buffers C++ library (development files) and proto files](https://packages.debian.org/sid/libprotobuf-dev)
+- A JSON RPC Endpoint with archive capabilities like [Infura](https://www.infura.io), [QuickNode](https://www.quicknode.com) or [Alchemy](https://www.alchemy.com)
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+To run the webapp, cd into the dashboard directory and run `yarn install` to install dependencies then run `yarn dev` to start the NextJS application in development mode.
 
-## Test and Deploy
+To run the server, run `cargo run --bin server`. It should build and generate the files needed by the server and run on port 3000 (default)
 
-Use the built-in continuous integration in GitLab.
+## Environment Variables
+`SERVER_PORT` (Default: 3000)  Determines where the GRPC Server will run.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+`FORK_PORT` (Default: 8545) Determines where the JSON RPC will run.
 
-***
+`FORK_CHAIN_ID` (Default: 1337) Determines which chain id will be returned by the fork, important to set your metamask to this chain ID for use on the frontend  
 
-# Editing this README
+`FORK_MNEMONIC` (Default: test ... junk) Which accounts will be funded with Ether on startup
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+`FORK_BLOCK_NUMBER` (Default: 0) What block number the fork server will start at, use 0 to start on latest block
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+`FORK_JSON_RPC_URL` URL for the JSON RPC with archive functionality
 
-## Name
-Choose a self-explaining name for your project.
+`FORK_BLOCK_TIME` (Default: 13) How many seconds before a block is mined, set to 0 to use automine mode
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## Metamask
+When resetting or loading state, always remember to reset your nonce by resetting your account in Metamask.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Do this by going to Settings > Advanced > Reset Account 
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## Common issues
+### NetworkError when attempting to fetch resource
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+This means that the dashboard is unable to connect to the gRPC server.
+Check if the server is properly running and note the address where it is listening.
+On the dashboard click on the gear ⚙ icon below the fox head and set the correct endpoint/chainId.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Failed to get EIP-1559 fees when deploying using forge script
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Updating the FORK_BLOCK_NUMBER to the latest or a relatively recent blocknumber can help
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
+<!-- LICENSE -->
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Distributed under the MIT License.
